@@ -1,0 +1,10 @@
+{
+  "users":
+  [
+    {"id":1,"email":"1@.com","name":"one", "pw":"Oneon3!!","screen": "view"},
+    {"id":2,"email":"2@.com","name":"two","pw":"Twotw0!!","screen": "view"},
+    {"id":3,"email":"3@.com","name":"three","pw":"Threethre3!","screen": "view"},
+    {"id":4,"email":"4@.com","name":"four","pw":"Fourf0ur!", "screen": "view"},
+    {"id":5,"email":"5@.com","name":"five","pw":"Fivefiv3!", "screen": "view"}
+  ]
+}
