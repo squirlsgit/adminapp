@@ -31,10 +31,40 @@ System.register(['@angular/core', '@angular/platform-browser', '@angular/platfor
             }],
         execute: function() {
             MainAdmin = (function () {
-                function MainAdmin(http) {
+                function MainAdmin(http, formBuilder) {
                     var _this = this;
                     this.http = http;
-                    this.http.request('users.json').subscribe(function (res) { _this.users = res.json().users; });
+                    this.formBuilder = formBuilder;
+                    this.http.request('users.json').subscribe(function (res) { _this.shadowusers = res.json().users, _this.users = res.json().users; });
+                    this.form = formBuilder.group({
+                        Reg_Search: '',
+                        Status_Active: true,
+                        Status_Inactive: true
+                    });
+                    this.form.valueChanges.subscribe(function (data) {
+                        console.log('Form changes', data);
+                        if (data.Reg_Search != '') {
+                            _this.users = [];
+                            var input = data.Reg_Search;
+                            input = String(input).replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, '\\$1').replace(/\x08/g, '\\x08');
+                            console.log(input);
+                            var regex_1 = new RegExp(input);
+                            _this.shadowusers.forEach(function (user) {
+                                //console.log(regex.source);
+                                //console.log(user.status);
+                                if ((user.name.match(regex_1) || user.email.match(regex_1)) && ((data.Status_Inactive && user.status == "Deactivated") || (data.Status_Active && user.status == "Activated"))) {
+                                    _this.users.push(user);
+                                }
+                            });
+                        }
+                        else {
+                            _this.users = [];
+                            _this.shadowusers.forEach(function (user) {
+                                if ((data.Status_Inactive && user.status == "Deactivated") || (data.Status_Active && user.status == "Activated"))
+                                    _this.users.push(user);
+                            });
+                        }
+                    });
                 }
                 MainAdmin.prototype.getScreen = function (user) {
                     if (user.screen === "view") {
@@ -77,9 +107,9 @@ System.register(['@angular/core', '@angular/platform-browser', '@angular/platfor
                 MainAdmin = __decorate([
                     core_1.Component({
                         selector: 'main-admin',
-                        template: "\n    <table>\n      <tr *ngFor=\"let user of users\">\n        <template [ngTemplateOutlet]=\"getScreen(user)\" [ngOutletContext] = \"{ user: user}\"></template>\n        </tr>\n      </table>\n      <template #screen id= \"screen\" let-user=\"user\">\n      <td>name: {{user.name}}</td>\n      <td>password: {{user.pw}}</td>\n      <td>email: {{user.email}}</td>\n      <td><button (click) = \"swapScreen(user)\">Edit</button></td>\n      <td><button (click) = \"delete(user)\">Soft Delete</button></td>\n      </template>\n      <template #edit id= \"edit\" let-user=\"user\">\n      <td><input #editname type=\"text\" value = {{user.name}}/></td>\n      <td><input #editpw type=\"text\" value = {{user.pw}} /></td>\n      <td><input #editemail type=\"text\" value = {{user.email}}/></td>\n      <td><button (click) = \"swapScreen(user, editname.value, editpw.value, editemail.value)\">Save</button></td>\n      <td><button (click) = \"reset(user)\">Reset</button></td>\n      <td><button (click) = \"delete(user)\">Soft Delete</button></td>\n      </template>\n  "
+                        template: "\n  <form [formGroup]=\"form\" (ngSubmit)=\"onSubmit()\">\n    <div class=\"form-group\">\n      <label>Search for User: </label>\n      <input class=\"form-control\" formControlName=\"Reg_Search\" placeholder=\"Name, Email\">\n      <label>Activated: </label>\n      <input type=\"checkbox\" class=\"form-control\" formControlName=\"Status_Active\" name =\"status_active\" checked>\n      <label>Deactivated: </label>\n      <input type=\"checkbox\" class=\"form-control\" formControlName=\"Status_Inactive\" name =\"status_inactive\" checked>\n    </div>\n  </form>\n    <table>\n      <tr *ngFor=\"let user of users\">\n        <template [ngTemplateOutlet]=\"getScreen(user)\" [ngOutletContext] = \"{ user: user}\"></template>\n        </tr>\n      </table>\n      <template #screen id= \"screen\" let-user=\"user\">\n      <td>name: {{user.name}}</td>\n      <td>password: {{user.pw}}</td>\n      <td>email: {{user.email}}</td>\n      <td>status: {{user.status}}</td>\n      <td><button (click) = \"swapScreen(user)\">Edit</button></td>\n      <td><button (click) = \"delete(user)\">Soft Delete</button></td>\n      </template>\n      <template #edit id= \"edit\" let-user=\"user\">\n      <td><input #editname type=\"text\" value = {{user.name}}/></td>\n      <td><input #editpw type=\"text\" value = {{user.pw}} /></td>\n      <td><input #editemail type=\"text\" value = {{user.email}}/></td>\n      <td>status: {{user.status}}</td>\n      <td><button (click) = \"swapScreen(user, editname.value, editpw.value, editemail.value)\">Save</button></td>\n      <td><button (click) = \"reset(user)\">Reset</button></td>\n      <td><button (click) = \"delete(user)\">Soft Delete</button></td>\n      </template>\n  "
                     }), 
-                    __metadata('design:paramtypes', [http_1.Http])
+                    __metadata('design:paramtypes', [http_1.Http, forms_1.FormBuilder])
                 ], MainAdmin);
                 return MainAdmin;
             }());
@@ -91,7 +121,7 @@ System.register(['@angular/core', '@angular/platform-browser', '@angular/platfor
                         declarations: [
                             MainAdmin,
                         ],
-                        imports: [platform_browser_1.BrowserModule, http_1.HttpModule, forms_1.FormsModule],
+                        imports: [platform_browser_1.BrowserModule, http_1.HttpModule, forms_1.FormsModule, forms_1.ReactiveFormsModule],
                         bootstrap: [MainAdmin]
                     }), 
                     __metadata('design:paramtypes', [])
