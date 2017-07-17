@@ -80,6 +80,10 @@ System.register(['@angular/core', '@angular/platform-browser', '@angular/platfor
                         console.log("swapping screen to " + user.screen + ", name and etc.: " + name + ", " + name + ", " + email + ", " + pw);
                     }
                     else if (user.screen === "edit") {
+                        var index = this.users.indexOf(user);
+                        this.shadowusers[index].name = name;
+                        this.shadowusers[index].pw = pw;
+                        this.shadowusers[index].email = email;
                         user.name = name;
                         user.pw = pw;
                         user.email = email;
@@ -94,7 +98,11 @@ System.register(['@angular/core', '@angular/platform-browser', '@angular/platfor
                     var index = this.users.indexOf(user);
                     if (index !== -1) {
                         this.users.splice(index, 1);
+                        this.shadowusers.splice(index, 1);
                     }
+                };
+                MainAdmin.prototype.sendChanges = function () {
+                    console.log("confirmed changes", this.shadowusers);
                 };
                 __decorate([
                     core_1.ViewChild('screen'), 
@@ -107,7 +115,7 @@ System.register(['@angular/core', '@angular/platform-browser', '@angular/platfor
                 MainAdmin = __decorate([
                     core_1.Component({
                         selector: 'main-admin',
-                        template: "\n  <form [formGroup]=\"form\" (ngSubmit)=\"onSubmit()\">\n    <div class=\"form-group\">\n      <label>Search for User: </label>\n      <input class=\"form-control\" formControlName=\"Reg_Search\" placeholder=\"Name, Email\">\n      <label>Activated: </label>\n      <input type=\"checkbox\" class=\"form-control\" formControlName=\"Status_Active\" name =\"status_active\" checked>\n      <label>Deactivated: </label>\n      <input type=\"checkbox\" class=\"form-control\" formControlName=\"Status_Inactive\" name =\"status_inactive\" checked>\n    </div>\n  </form>\n    <table>\n      <tr *ngFor=\"let user of users\">\n        <template [ngTemplateOutlet]=\"getScreen(user)\" [ngOutletContext] = \"{ user: user}\"></template>\n        </tr>\n      </table>\n      <template #screen id= \"screen\" let-user=\"user\">\n      <td>name: {{user.name}}</td>\n      <td>password: {{user.pw}}</td>\n      <td>email: {{user.email}}</td>\n      <td>status: {{user.status}}</td>\n      <td><button (click) = \"swapScreen(user)\">Edit</button></td>\n      <td><button (click) = \"delete(user)\">Soft Delete</button></td>\n      </template>\n      <template #edit id= \"edit\" let-user=\"user\">\n      <td><input #editname type=\"text\" value = {{user.name}}/></td>\n      <td><input #editpw type=\"text\" value = {{user.pw}} /></td>\n      <td><input #editemail type=\"text\" value = {{user.email}}/></td>\n      <td>status: {{user.status}}</td>\n      <td><button (click) = \"swapScreen(user, editname.value, editpw.value, editemail.value)\">Save</button></td>\n      <td><button (click) = \"reset(user)\">Reset</button></td>\n      <td><button (click) = \"delete(user)\">Soft Delete</button></td>\n      </template>\n  "
+                        template: "\n  <form [formGroup]=\"form\" (ngSubmit)=\"onSubmit()\">\n    <div class=\"form-group\">\n      <label>Search for User: </label>\n      <input class=\"form-control\" formControlName=\"Reg_Search\" placeholder=\"Name, Email\">\n      <label>Activated: </label>\n      <input type=\"checkbox\" class=\"form-control\" formControlName=\"Status_Active\" name =\"status_active\" checked>\n      <label>Deactivated: </label>\n      <input type=\"checkbox\" class=\"form-control\" formControlName=\"Status_Inactive\" name =\"status_inactive\" checked>\n    </div>\n  </form>\n    <table>\n      <tr *ngFor=\"let user of users\">\n        <template [ngTemplateOutlet]=\"getScreen(user)\" [ngOutletContext] = \"{ user: user}\"></template>\n        </tr>\n      </table>\n\t  <button (click) =\"sendChanges()\">Confirm</button>\n      <template #screen id= \"screen\" let-user=\"user\">\n      <td>name: {{user.name}}</td>\n      <td>password: {{user.pw}}</td>\n      <td>email: {{user.email}}</td>\n      <td>status: {{user.status}}</td>\n      <td><button (click) = \"swapScreen(user)\">Edit</button></td>\n      <td><button (click) = \"delete(user)\">Soft Delete</button></td>\n      </template>\n      <template #edit id= \"edit\" let-user=\"user\">\n      <td><input #editname type=\"text\" value = {{user.name}}/></td>\n      <td><input #editpw type=\"text\" value = {{user.pw}} /></td>\n      <td><input #editemail type=\"text\" value = {{user.email}}/></td>\n      <td>status: {{user.status}}</td>\n      <td><button (click) = \"swapScreen(user, editname.value, editpw.value, editemail.value)\">Save</button></td>\n      <td><button (click) = \"reset(user)\">Reset</button></td>\n      <td><button (click) = \"delete(user)\">Soft Delete</button></td>\n      </template>\n  "
                     }), 
                     __metadata('design:paramtypes', [http_1.Http, forms_1.FormBuilder])
                 ], MainAdmin);

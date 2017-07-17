@@ -26,6 +26,7 @@ import {FormsModule, ReactiveFormsModule, FormBuilder} from '@angular/forms';
         <template [ngTemplateOutlet]="getScreen(user)" [ngOutletContext] = "{ user: user}"></template>
         </tr>
       </table>
+	  <button (click) ="sendChanges()">Confirm</button>
       <template #screen id= "screen" let-user="user">
       <td>name: {{user.name}}</td>
       <td>password: {{user.pw}}</td>
@@ -92,6 +93,10 @@ import {FormsModule, ReactiveFormsModule, FormBuilder} from '@angular/forms';
       if (user.screen === "view") {user.screen = "edit";
       console.log("swapping screen to " + user.screen + ", name and etc.: " + name + ", " + name + ", " + email + ", " + pw); }
       else if (user.screen === "edit") {
+		let index: number = this.users.indexOf(user);
+		this.shadowusers[index].name = name;
+		this.shadowusers[index].pw = pw;
+		this.shadowusers[index].email = email;
         user.name = name;
         user.pw = pw;
         user.email = email;
@@ -106,7 +111,11 @@ import {FormsModule, ReactiveFormsModule, FormBuilder} from '@angular/forms';
     let index: number = this.users.indexOf(user);
     if (index !== -1){
       this.users.splice(index,1);
+	  this.shadowusers.splice(index,1);
     }
+  }
+  sendChanges(): void{
+	console.log("confirmed changes",this.shadowusers);
   }
 
 }
