@@ -130,3 +130,5 @@ import {FormsModule, ReactiveFormsModule, FormBuilder} from '@angular/forms';
 class AppModule {}
 
 platformBrowserDynamic().bootstrapModule(AppModule);
+
+//to do: users need to request from server, select amount per page. and same for find, shadowusers will now store the pushed user changes in a stacked array of user changes [useroriginal -> userfinal and will display this list upon request]
